@@ -6,7 +6,7 @@
 Plugin Name: Simpul Tweets by Esotech
 Plugin URI: http://www.esotech.org
 Description: This plugin is designed to access a twitter feed and display it in a Wordpress Widget.
-Version: 1.5
+Version: 1.5.1
 Author: Alexander Conroy
 Author URI: http://www.esotech.org/people/alexander-conroy/
 License: Commercial
@@ -48,7 +48,7 @@ class SimpulTweets extends WP_Widget
 			endif;
 			
 			$widget_array[$widget_id] = $instance;
-			update_option('widget_simpul_facebook', $widget_array);
+			update_option('widget_simpul_tweets', $widget_array);
 			
 		endif;
 		
