@@ -6,7 +6,7 @@
 Plugin Name: Simpul Tweets by Esotech
 Plugin URI: http://www.esotech.org
 Description: This plugin is designed to access a twitter feed and display it in a Wordpress Widget.
-Version: 1.5.1
+Version: 1.5.2
 Author: Alexander Conroy
 Author URI: http://www.esotech.org/people/alexander-conroy/
 License: Commercial
@@ -43,16 +43,27 @@ class SimpulTweets extends WP_Widget
 			$widget_array = get_option('widget_simpul_tweets');
 			
 			if(!$instance['cache'] || current_time('timestamp') > strtotime($instance['cache_interval'] . ' hours', $instance['last_cache_time'])):
-				$instance['cache'] = self::getTweets( $instance['account'], $instance['number'] );;
+				$instance['cache'] = self::twitterStatus( $instance['account'] );;
 				$instance['last_cache_time'] = current_time('timestamp');
 			endif;
 			
 			$widget_array[$widget_id] = $instance;
 			update_option('widget_simpul_tweets', $widget_array);
 			
+		else:
+			
+			$widget_class = explode('-', $args['widget_id']);
+			$widget_id = $widget_class[count($widget_class) - 1];
+			$widget_array = get_option('widget_simpul_tweets');
+			
+			unset($instance['cache'], $instance['last_cache_time']);
+			
+			$widget_array[$widget_id] = $instance;
+			update_option('widget_simpul_tweets', $widget_array);
+			
 		endif;
 		
-		$widget .= self::getTweets( $instance['account'], $instance['number'] );
+		$widget .= self::getTweets( $instance );
 		$widget .= "</li>";
 		
 		echo $widget;
@@ -141,11 +152,14 @@ class SimpulTweets extends WP_Widget
 	# This is the mthod we will call, which sets everything up and calls the
 	# twitter_status method
 	# -----------------------------------------------------------------------------#
-	public function getTweets($twitter_id, $total_tweets = 20)
+	public function getTweets($instance)
 	{
 		$result = null;
 		$i = null;
 
+		$twitter_id = $instance['account'];
+		$total_tweets = $instance['number'] ? $instance['number'] : 20;
+		
 		# get the actual feed
 		if($instance['cache_enabled']):
 			$tweep = $instance['cache'];
