@@ -11,7 +11,8 @@ Stable tag: trunk
 Enables a widget that will pull a twitter feed feed via JSON by Twitter Name and display them. 
 
 == Changelog ==
-
+= 1.5.4 =
+* More code cleanup.
 = 1.5.3 =
 * Cleaned up cache code.
 = 1.5.2 =

@@ -6,7 +6,7 @@
 Plugin Name: Simpul Tweets by Esotech
 Plugin URI: http://www.esotech.org
 Description: This plugin is designed to access a twitter feed and display it in a Wordpress Widget.
-Version: 1.5.3
+Version: 1.5.4
 Author: Alexander Conroy
 Author URI: http://www.esotech.org/people/alexander-conroy/
 License: Commercial
@@ -43,12 +43,12 @@ class SimpulTweets extends WP_Widget
 				$instance['last_cache_time'] = current_time('timestamp');
 			endif;
 			
-			self::updateWidgetArray( $args, $instance, 'simpul_tweets' );
+			self::updateWidgetArray( $args, $instance );
 			
 		else:
 			
 			unset($instance['cache'], $instance['last_cache_time']);
-			self::updateWidgetArray( $args, $instance, 'simpul_tweets' );
+			self::updateWidgetArray( $args, $instance );
 			
 		endif;
 		
@@ -222,14 +222,15 @@ class SimpulTweets extends WP_Widget
 			return $radio;
 		endif;
 	}
-	public function updateWidgetArray( $args, $instance, $name ) {
+	public function updateWidgetArray( $args, $instance ) {
 		
 		$widget_class = explode('-', $args['widget_id']);
-		$widget_id = $widget_class[count($widget_class) - 1];
-		$widget_array = get_option('widget_' . $name);
+		$widget_id = array_pop($widget_class);
+		$widget_name = implode('-', $widget_class);
+		$widget_array = get_option('widget_' . $widget_name);
 		
 		$widget_array[$widget_id] = $instance;
-		update_option('widget_' . $name, $widget_array);
+		update_option('widget_' . $widget_name, $widget_array);
 		
 	}
 }
