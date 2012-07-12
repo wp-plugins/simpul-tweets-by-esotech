@@ -12,6 +12,8 @@ Enables a widget that will pull a twitter feed feed via JSON by Twitter Name and
 
 == Changelog ==
 
+= 1.5.3 =
+* Cleaned up cache code.
 = 1.5.2 =
 * Fixed PEBKAC programmer bug.
 = 1.5.1 =
