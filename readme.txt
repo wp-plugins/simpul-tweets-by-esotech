@@ -11,6 +11,8 @@ Stable tag: trunk
 Enables a widget that will pull a twitter feed feed via JSON by Twitter Name and display them. 
 
 == Changelog ==
+= 1.6.0 =
+* Added Dynamic Title Element, Container Class, Tweet Element. Cleaned up code. Fixed before widget and after widget. 
 = 1.5.5 =
 * Changed header to h3.
 = 1.5.4 =

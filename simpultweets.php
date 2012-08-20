@@ -6,7 +6,7 @@
 Plugin Name: Simpul Tweets by Esotech
 Plugin URI: http://www.esotech.org
 Description: This plugin is designed to access a twitter feed and display it in a Wordpress Widget.
-Version: 1.5.5
+Version: 1.6
 Author: Alexander Conroy
 Author URI: http://www.esotech.org/people/alexander-conroy/
 License: Commercial
@@ -29,11 +29,19 @@ class SimpulTweets extends WP_Widget
 	}
 	public function widget( $args, $instance )
 	{
-		extract($args);
-		$widget = '<li class="simpul-twitter widget widget_text">';
-		if( $instance['title'] ):
-			$widget .= '<h3 class="widgettitle">' . $instance['title'] . '</h2>';
+		extract($args, EXTR_SKIP);
+		
+		echo $before_widget;
+		
+		if($instance['title_element']):
+			$before_title = '<' . $instance['title_element'] . ' class="widgettitle">';
+			$after_title = '</' . $instance['title_element'] . '>';
+		else:
+			$before_title = '<h3 class="widgettitle">';
+			$after_title = '</h3>';
 		endif;
+		
+		if ( !empty( $instance['title']) ) { echo $before_title . $instance['title']. $after_title; };
 		
 		// Solution for caching.
 		if($instance['cache_enabled']):
@@ -51,11 +59,22 @@ class SimpulTweets extends WP_Widget
 			self::updateWidgetArray( $args, $instance );
 			
 		endif;
+		if( $instance['tweet_element'] == 'li'): 
+		echo '<ul class="' . $instance['tweet_class'] . '">';
+		else:
+			echo '<div class="' . $instance['tweet_class'] . '">';
+		endif;
 		
-		$widget .= self::getTweets( $instance );
-		$widget .= "</li>";
+		echo self::getTweets( $instance );
 		
-		echo $widget;
+		if( $instance['tweet_element'] == 'li'): 
+			echo '</ul>';
+		else:
+			echo '</div>';
+		endif;
+		
+		echo $after_widget;
+		
 	}	
 	/**
 	 * Sanitize widget form values as they are saved.
@@ -68,10 +87,13 @@ class SimpulTweets extends WP_Widget
 	 * @return array Updated safe values to be saved.
 	 */
 	public function update( $new_instance, $old_instance ) {
-		$instance 				= $old_instance;
-		$instance['title'] 		= strip_tags($new_instance['title']);
-		$instance['account'] 	= strip_tags($new_instance['account']);
-		$instance['number'] 	= strip_tags($new_instance['number']);
+		$instance 							= $old_instance;
+		$instance['title'] 					= strip_tags($new_instance['title']);
+		$instance['title_element'] 			= strip_tags($new_instance['title_element']);
+		$instance['account'] 				= str_replace("@", "", strip_tags($new_instance['account'] ) );
+		$instance['number'] 				= strip_tags($new_instance['number']);
+		$instance['tweet_class'] 			= strip_tags($new_instance['tweet_class']);
+		$instance['tweet_element'] 			= strip_tags($new_instance['tweet_element']);
 		$instance['cache_enabled']			= strip_tags($new_instance['cache_enabled']);
 		$instance['cache_interval']			= strip_tags($new_instance['cache_interval']);
 		
@@ -86,32 +108,24 @@ class SimpulTweets extends WP_Widget
 	 * @param array $instance Previously saved values from database.
 	 */
 	public function form( $instance ) {
-		$instance 	= wp_parse_args( (array) $instance, array( 'title' => '', 'account' => 'esotech', 'number' => '3' ) );
-		$title 		= strip_tags($instance['title']);
-		$account 	= strip_tags($instance['account']);
-		$number 	= strip_tags($instance['number']);
+		$instance 					= wp_parse_args( (array) $instance, array( 'title' => '', 'account' => 'esotech', 'number' => '3' ) );
+		$title 						= strip_tags($instance['title']);
+		$title_element				= strip_tags($instance['title_element']);
+		$account 					= strip_tags($instance['account']);
+		$number 					= strip_tags($instance['number']);
+		$tweet_class				= strip_tags($instance['tweet_class']);
+		$tweet_element				= strip_tags($instance['tweet_element']);
 		$cache_enabled 				= strip_tags($instance['cache_enabled']);
 		$cache_interval 			= strip_tags($instance['cache_interval']);
 		?>
-			<p>
-				<label for="<?php echo $this->get_field_id('title'); ?>">
-					Title: 
-					<input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo attribute_escape($title); ?>" />
-				</label>
-			</p>
-			<p>
-				<label for="<?php echo $this->get_field_id('account'); ?>">
-					Twitter account name: 
-					<input class="widefat" id="<?php echo $this->get_field_id('account'); ?>" name="<?php echo $this->get_field_name('account'); ?>" type="text" value="<?php echo attribute_escape($account); ?>" />
-				</label>
-			</p>
-			<p>
-				<label for="<?php echo $this->get_field_id('number'); ?>">
-					Amount of tweets to be displayed: 
-					<input class="widefat" id="<?php echo $this->get_field_id('number'); ?>" name="<?php echo $this->get_field_name('number'); ?>" type="text" value="<?php echo attribute_escape($number); ?>" />
-				</label>
-			</p>
+
 		<?php
+		echo self::formatField($this->get_field_name('title'), $this->get_field_id('title'), $title, "Title" );
+		echo self::formatField($this->get_field_name('title_element'), $this->get_field_id('title_element'), $title_element, "Title Element(default h3)" );
+		echo self::formatField($this->get_field_name('account'), $this->get_field_id('account'), $account, "Twitter Account Name" );
+		echo self::formatField($this->get_field_name('number'), $this->get_field_id('number'), $number, "Amount of tweets to be displayed: " );
+		echo self::formatField($this->get_field_name('tweet_class'), $this->get_field_id('tweet_class'), $tweet_class, "Tweet Container Class" );
+		echo self::formatField($this->get_field_name('tweet_element'), $this->get_field_id('tweet_element'), $tweet_element, "Tweet Element(default p)" );
 		echo "<h3>Cache Options</h3>";
 		echo self::formatField($this->get_field_name('cache_enabled'), $this->get_field_id('cache_enabled'), $cache_enabled, "Use Cache?", 'checkbox' );
 		echo self::formatField($this->get_field_name('cache_interval'), $this->get_field_id('cache_interval'),  $cache_interval, "Cache Interval (hours)" );
@@ -158,32 +172,35 @@ class SimpulTweets extends WP_Widget
 		//print_r($tweep);
 	
 		# Make sure we have something to work with
-		if(!empty($tweep))
-		{
+		if(!empty($tweep)):
 			
 			$tweet_count = 1;
-			foreach($tweep as $tweet)
-			{
-				
+			foreach($tweep as $tweet):
 				if($tweet_count > $total_tweets)
 					break;
 				$tweet_count++;
 
 				$tweet_link = "https://twitter.com/" . $twitter_id . "/status/" . $tweet->id;
-
-				$tweet_date = date ("Y-m-d H:i:s", strtotime($tweet->created_at . " -5 Hours"));
 				
-				$tweet_link_date ='<a href="' . $tweet_link . '">' . $tweet_date . '</a>';  
+				if( !empty( $instance['tweet_date'] ) ):
+					$tweet_date = date ("Y-m-d H:i:s", strtotime($tweet->created_at . " -5 Hours"));
+					if( !empty($instance['tweet_date_link'] ) ):
+						$tweet_date ='<a href="' . $tweet_link . '" target="_blank">' . $tweet_date . '</a>';	
+					endif;
+				endif;  
 				
 				$content = $tweet->text;
 				
 				$content = self::textToLink($content);
 					
-				$tweets .= "<p>".$content." - " . $tweet_link_date . "</p>";
-	
-			}
+				if( !empty( $instance['tweet_element'] ) ):
+					$tweets .= '<' . $instance['tweet_element'] . '>'. $content." - " . $tweet_date  . '</' . $instance['tweet_element'] . '>'; 
+				else:
+					$tweets .= "<p>".$content." - " . $tweet_date . "</p>";
+				endif;
+			endforeach;
 			return $tweets;
-		}
+		endif;
 	return false;
 	}
 	public function textToLink($text)
