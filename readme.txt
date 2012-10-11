@@ -11,6 +11,8 @@ Stable tag: trunk
 Enables a widget that will pull a twitter feed feed via JSON by Twitter Name and display them. 
 
 == Changelog ==
+= 1.8.1 =
+* Cache wasnt being passed instance, which stopped it from getting the proper number of tweets. 
 = 1.8.0 =
 * Added many new features including showing the date, setting the date format, linking the entire element to the tweet. Also update the cURL call because Twitter apparently removed the previous method to recieve the JSON feed. The Json feed now limits the amount of tweets given back as oppossed to a counter. It may allow for extra tweets beyond the basic 20 but has not been tested. Cleaned up some other bits of code and made defaults easier for the system to manage. Update License also to GPLv3+
 = 1.6.0 =
