@@ -11,6 +11,8 @@ Stable tag: trunk
 Enables a widget that will pull a twitter feed feed via JSON by Twitter Name and display them. 
 
 == Changelog ==
+= 1.8.2 =
+* Class name is now simpul-tweets and ID is simpul_tweets as it should be.
 = 1.8.1 =
 * Cache wasnt being passed instance, which stopped it from getting the proper number of tweets. 
 = 1.8.0 =
