@@ -6,7 +6,7 @@
 Plugin Name: Simpul Tweets by Esotech
 Plugin URI: http://www.esotech.org
 Description: This plugin is designed to access a twitter feed and display it in a Wordpress Widget.
-Version: 1.8.2
+Version: 1.8.3
 Author: Alexander Conroy
 Author URI: http://www.esotech.org/people/alexander-conroy/
 License: This code is released under the GPL licence version 3 or later, available here http://www.gnu.org/licenses/gpl.txt
@@ -198,7 +198,7 @@ class SimpulTweets extends WP_Widget
 		# Make sure we have something to work with
 		if(!empty($tweep)):	
 			foreach($tweep as $tweet):
-				$tweet_link = "https://twitter.com/" . $twitter_id . "/status/" . $tweet->id;
+				$tweet_link = "https://twitter.com/" . $twitter_id . "/status/" . $tweet->id_str;
 				
 				if( !empty( $instance['tweet_date'] ) ):	
 					$tweet_date = date($instance['tweet_date_format'], strtotime($tweet->created_at . " -5 Hours"));

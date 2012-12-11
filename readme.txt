@@ -35,6 +35,8 @@ Caching keeps a local copy of your tweets at the interval specified so you don't
 Try disabling the cache, saving, refreshing the page where you widget displays, then turning cache back on. Cache saves data into wordpress, so updating settings won't reflect until the next cache update. 
 
 == Changelog ==
+= 1.8.3 =
+* Fixed something due ot Twitter API change that broke links.
 = 1.8.2 =
 * Class name is now simpul-tweets and ID is simpul_tweets as it should be.
 = 1.8.1 =
