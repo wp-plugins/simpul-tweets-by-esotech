@@ -1,14 +1,20 @@
 === Plugin Name ===
 Contributors: geilt
 Donate link: http://www.esotech.org/
-Tags: twitter, feed, widget, tweets, simpul, esotech, json
+Tags: twitter, feed, widget, tweets, simpul, esotech, json, api, oauth
 Requires at least: 3.4
-Tested up to: 3.4.2
+Tested up to: 3.6
 Stable tag: trunk
+License: GPLv2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
 
-Enables a widget that will pull a twitter feed feed via JSON by Twitter @UserName and display them. 
+Enables a widget that will pull a twitter feed feed via API by Twitter @UserName and display them. 
+
+Since Twitter updated to v1.1 OAUTH, Twitter Application credentials are now required to be registered to authorize use of the Twitter API. 
+
+[Create an Application](https://dev.twitter.com/apps/new)
 
 [More Details](http://www.esotech.org/plugins/simpul/simpul-tweets/)
 
@@ -18,7 +24,7 @@ Enables a widget that will pull a twitter feed feed via JSON by Twitter @UserNam
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Go to Appearance -> Widgets
 4. Drag the "Twitter" Widget into the Sidebar you want to use.
-5. Choose the options as you need them.
+5. Make sure to enter the Twitter Consumer Key, Consumer Secret, Access Token and Access Token Secret. Choose other options as you need them.
 
 == Frequently Asked Questions ==
 
@@ -35,6 +41,8 @@ Caching keeps a local copy of your tweets at the interval specified so you don't
 Try disabling the cache, saving, refreshing the page where you widget displays, then turning cache back on. Cache saves data into wordpress, so updating settings won't reflect until the next cache update. 
 
 == Changelog ==
+= 2.0.0 =
+* Now works with OAUTH v1.1. Required Twitter Application credentials from dev.twitter.com. Configurable PER Widget so you can register multiple accounts. Including and using TwitterAPIExchange http://github.com/j7mbo/twitter-api-php
 = 1.8.3 =
 * Fixed something due ot Twitter API change that broke links.
 = 1.8.2 =

@@ -1,17 +1,14 @@
 <?php
-/**
- * @package Simpul
- */
 /*
 Plugin Name: Simpul Tweets by Esotech
+Package: Simpul
 Plugin URI: http://www.esotech.org
-Description: This plugin is designed to access a twitter feed and display it in a Wordpress Widget.
-Version: 1.8.3
+Description: This plugin is designed to access a twitter feed and display it in a Wordpress Widget using OAUTH 1.1
+Version: 2.0.0
 Author: Alexander Conroy
 Author URI: http://www.esotech.org/people/alexander-conroy/
 License: This code is released under the GPL licence version 3 or later, available here http://www.gnu.org/licenses/gpl.txt
 */
-
 
 class SimpulTweets extends WP_Widget 
 {
@@ -91,6 +88,10 @@ class SimpulTweets extends WP_Widget
 		$instance['title_element'] 			= strip_tags($new_instance['title_element']);
 		$instance['account'] 				= str_replace("@", "", strip_tags($new_instance['account'] ) );
 		$instance['number'] 				= strip_tags($new_instance['number']);
+		$instance['consumer_key'] 			= strip_tags($new_instance['consumer_key']);
+		$instance['consumer_secret'] 		= strip_tags($new_instance['consumer_secret']);
+		$instance['oauth_access_token'] 	= strip_tags($new_instance['oauth_access_token']);
+		$instance['oauth_access_token_secret'] 	= strip_tags($new_instance['oauth_access_token_secret']);
 		$instance['tweet_class'] 			= strip_tags($new_instance['tweet_class']);
 		$instance['tweet_element'] 			= strip_tags($new_instance['tweet_element']);
 		$instance['tweet_element_link'] 	= strip_tags($new_instance['tweet_element_link']);
@@ -117,6 +118,10 @@ class SimpulTweets extends WP_Widget
 		$title_element				= strip_tags($instance['title_element']);
 		$account 					= strip_tags($instance['account']);
 		$number 					= strip_tags($instance['number']);
+		$consumer_key				= strip_tags($instance['consumer_key']);
+		$consumer_secret			= strip_tags($instance['consumer_secret']);
+		$oauth_access_token			= strip_tags($instance['oauth_access_token']);
+		$oauth_access_token_secret	= strip_tags($instance['oauth_access_token_secret']);
 		$tweet_class				= strip_tags($instance['tweet_class']);
 		$tweet_element				= strip_tags($instance['tweet_element']);
 		$tweet_element_link			= strip_tags($instance['tweet_element_link']);
@@ -132,6 +137,10 @@ class SimpulTweets extends WP_Widget
 		echo self::formatField($this->get_field_name('title_element'), $this->get_field_id('title_element'), $title_element, "Title Element(default h3)" );
 		echo self::formatField($this->get_field_name('account'), $this->get_field_id('account'), $account, "Twitter Account Name" );
 		echo self::formatField($this->get_field_name('number'), $this->get_field_id('number'), $number, "Amount of tweets to be displayed: " );
+		echo self::formatField($this->get_field_name('consumer_key'), $this->get_field_id('consumer_key'), $consumer_key, "Twitter Consumer Key" );
+		echo self::formatField($this->get_field_name('consumer_secret'), $this->get_field_id('consumer_secret'), $consumer_secret, "Twitter Consumer Secret" );
+		echo self::formatField($this->get_field_name('oauth_access_token'), $this->get_field_id('oauth_access_token'), $oauth_access_token, "Twitter Access Token" );
+		echo self::formatField($this->get_field_name('oauth_access_token_secret'), $this->get_field_id('oauth_access_token_secret'), $oauth_access_token_secret, "Twitter Access Token Secret" );
 		echo self::formatField($this->get_field_name('tweet_class'), $this->get_field_id('tweet_class'), $tweet_class, "Tweet Container Class" );
 		echo self::formatField($this->get_field_name('tweet_element'), $this->get_field_id('tweet_element'), $tweet_element, "Tweet Element(default p)" );
 		echo self::formatField($this->get_field_name('tweet_element_link'), $this->get_field_id('tweet_element_link'), $tweet_element_link, "Link Element to Tweet", 'checkbox' );
@@ -152,24 +161,20 @@ class SimpulTweets extends WP_Widget
 	# -----------------------------------------------------------------------------#
 	public function twitterStatus($twitter_id, $instance = null)
 	{
-		$ch = curl_init();
-		$header = array();
-		$header[] = 'Accept: text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5';
-		$header[] = 'Cache-Control: max-age=0';
-		$header[] = 'Connection: keep-alive';
-		$header[] = 'Keep-Alive: 300';
-		$header[] = 'Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7';
-		$header[] = 'Accept-Language: en-us,en;q=0.5';
-		$header[] = 'Pragma: ';
-		//curl_setopt($c, CURLOPT_URL, "https://twitter.com/statuses/user_timeline/".$twitter_id.".json");
-		curl_setopt($ch, CURLOPT_URL, "https://api.twitter.com/1/statuses/user_timeline.json?include_entities=true&include_rts=true&screen_name=" . $twitter_id . "&count=" . $instance['number'] );
-		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-		$response = curl_exec($ch);
-		$responseInfo = curl_getinfo($ch);
-		curl_close($ch);
+		include_once('TwitterAPIExchange.php');
+		
+		//curl_setopt($ch, CURLOPT_URL, "https://api.twitter.com/1/statuses/user_timeline.json?include_entities=true&include_rts=true&screen_name=" . $twitter_id . "&count=" . $instance['number'] );
+		
+		$url = 'https://api.twitter.com/1.1/statuses/user_timeline.json';
+		
+		$getfield = '?include_entities=true&include_rts=true&screen_name=' . $twitter_id . '&count=' . $instance['number'];
+		
+		$requestMethod = 'GET';
+
+		$twitter = new TwitterAPIExchange($instance);
+		$response = $twitter->setGetfield($getfield)
+		             ->buildOauth($url, $requestMethod)
+		             ->performRequest();
 
 		return json_decode($response);
 	}
